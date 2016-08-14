@@ -8,6 +8,4 @@ public interface Command {
 	
 	public boolean isExecuted();
 	
-	public boolean attachCommand(Command command);
-	
 }
