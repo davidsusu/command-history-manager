@@ -2,7 +2,7 @@ package hu.webarticum.chm;
 
 import java.util.LinkedList;
 
-public class CommandQueue {
+public class CommandQueue implements History {
 	
 	private int maximumCapacity;
 	
@@ -18,6 +18,7 @@ public class CommandQueue {
 		this.maximumCapacity = maximumCapacity;
 	}
 	
+	@Override
 	public boolean executeAsNext(Command command) {
 		if (command.execute()) {
 			while (queue.size() > position) {
@@ -37,6 +38,7 @@ public class CommandQueue {
 		}
 	}
 
+	@Override
 	public boolean hasNextCommand() {
 		return (queue.size() > position);
 	}
@@ -48,7 +50,8 @@ public class CommandQueue {
 			return null;
 		}
 	}
-	
+
+	@Override
 	public boolean hasPreviousCommand() {
 		return (position > 0);
 	}
@@ -64,7 +67,8 @@ public class CommandQueue {
 	public boolean isEmpty() {
 		return queue.isEmpty();
 	}
-	
+
+	@Override
 	public boolean executeNext() {
 		if (!hasNextCommand()) {
 			return false;
@@ -79,6 +83,7 @@ public class CommandQueue {
 		}
 	}
 
+	@Override
 	public boolean rollBackPrevious() {
 		if (!hasPreviousCommand()) {
 			return false;
