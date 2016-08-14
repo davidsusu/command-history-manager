@@ -9,7 +9,12 @@ abstract public class AbstractCommand implements Command {
 		if (executed) {
 			return false;
 		} else {
-			return _execute();
+			if (_execute()) {
+				executed = true;
+				return true;
+			} else {
+				return false;
+			}
 		}
 	}
 
@@ -18,7 +23,12 @@ abstract public class AbstractCommand implements Command {
 		if (!executed) {
 			return false;
 		} else {
-			return _rollBack();
+			if (_rollBack()) {
+				executed = false;
+				return true;
+			} else {
+				return false;
+			}
 		}
 	}
 

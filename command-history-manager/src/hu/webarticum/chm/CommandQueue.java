@@ -15,9 +15,6 @@ public class CommandQueue {
 	}
 	
 	public CommandQueue(int maximumCapacity) {
-		if (maximumCapacity < 1) {
-			throw new IllegalArgumentException("maximumCapacity must be greater than zero, " + maximumCapacity + " given");
-		}
 		this.maximumCapacity = maximumCapacity;
 	}
 	
@@ -26,12 +23,14 @@ public class CommandQueue {
 			while (queue.size() > position) {
 				queue.remove(position);
 			}
-			while (queue.size() > maximumCapacity - 1) {
-				queue.removeFirst();
-				position--;
-			}
 			queue.add(command);
 			position++;
+			if (maximumCapacity >= 0) {
+				while (queue.size() > maximumCapacity) {
+					queue.removeFirst();
+					position--;
+				}
+			}
 			return true;
 		} else {
 			return false;
@@ -55,7 +54,7 @@ public class CommandQueue {
 	}
 
 	public Command getPreviousCommand() {
-		if (hasNextCommand()) {
+		if (hasPreviousCommand()) {
 			return queue.get(position - 1);
 		} else {
 			return null;
