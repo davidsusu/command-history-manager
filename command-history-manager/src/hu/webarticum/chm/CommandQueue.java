@@ -97,5 +97,36 @@ public class CommandQueue implements History {
 			}
 		}
 	}
+
+	@Override
+	public boolean contains(Command command) {
+		return queue.contains(command);
+	}
+
+	@Override
+	public boolean moveTo(Command command) {
+		int targetPosition = queue.indexOf(command);
+		if (targetPosition == (-1)) {
+			return false;
+		}
+		
+		if (targetPosition > position) {
+			for (int i = position; i < targetPosition; i++) {
+				if (!queue.get(i).execute()) {
+					position = i;
+					return false;
+				}
+			}
+		} else if (targetPosition < position) {
+			for (int i = position - 1; i >= targetPosition; i--) {
+				if (!queue.get(i).rollBack()) {
+					position = i + 1;
+					return false;
+				}
+			}
+		}
+		
+		return true;
+	}
 	
 }

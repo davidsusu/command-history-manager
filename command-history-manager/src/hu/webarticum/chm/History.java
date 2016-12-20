@@ -12,4 +12,8 @@ public interface History {
 	
 	public boolean rollBackPrevious();
 	
+	public boolean contains(Command command);
+	
+	public boolean moveTo(Command command);
+	
 }

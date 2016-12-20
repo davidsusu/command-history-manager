@@ -9,63 +9,95 @@ import java.util.List;
 
 public class ComplexHistory implements History {
 	
-	private Node rootNode = null; // TODO: fake final rootNode
+	private Node rootNode = new Node(null, null);
 	
-	private Node previousNode = null;
+	private Node previousNode = rootNode;
 	
 	@Override
 	public boolean executeAsNext(Command command) {
-		if (previousNode == null) {
-			// TODO
-		} else {
-			// TODO
+		if (!command.execute()) {
+			return false;
 		}
-		return false;
+		
+		previousNode = previousNode.branch(command);
+		return true;
 	}
 
 	@Override
 	public boolean hasNextCommand() {
-		if (previousNode != null) {
-			return (previousNode.selectedChild != null);
-		} else {
-			return (rootNode != null);
-		}
+		return (previousNode.selectedChild != null);
 	}
 
 	@Override
 	public boolean hasPreviousCommand() {
-		return (previousNode != null);
+		return (previousNode != rootNode);
 	}
 
 	@Override
 	public boolean executeNext() {
-		Node subNode = null;
-		if (previousNode != null) {
-			subNode = previousNode.selectedChild;
-		} else if (rootNode != null) {
-			subNode = rootNode;
+		if (previousNode.selectedChild == null) {
+			return false;
 		}
-		if (subNode != null) {
-			if (subNode.command.execute()) {
-				previousNode = subNode;
-				return true;
-			}
+		
+		if (!previousNode.selectedChild.command.execute()) {
+			return false;
 		}
-		return false;
+		
+		previousNode = previousNode.selectedChild;
+		return true;
 	}
 
 	@Override
 	public boolean rollBackPrevious() {
-		if (previousNode != null) {
-			if (previousNode.command.rollBack()) {
-				previousNode = previousNode.parent;
-				return true;
-			}
+		if (previousNode == rootNode) {
+			return false;
 		}
-		return false;
+		
+		if (!previousNode.command.execute()) {
+			return false;
+		}
+		
+		previousNode = previousNode.parent;
+		return true;
 	}
 
-	class Node {
+	@Override
+	public boolean contains(Command command) {
+		return (lookUp(command) != null);
+	}
+
+	@Override
+	public boolean moveTo(Command command) {
+		
+		// TODO
+		
+		return false;
+	}
+	
+	private Node lookUp(Command command) {
+		if (previousNode.command == command) {
+			return previousNode;
+		}
+		
+		List<Node> level = new ArrayList<Node>();
+		level.add(rootNode);
+		while (!level.isEmpty()) {
+			List<Node> nextLevel = new ArrayList<Node>();
+			for (Node node: level) {
+				for (Node childNode: node.children) {
+					if (childNode.command == command) {
+						return childNode;
+					}
+					nextLevel.add(childNode);
+				}
+			}
+			level = nextLevel;
+		}
+		
+		return null;
+	}
+	
+	private class Node {
 		
 		Node parent;
 		
@@ -95,7 +127,7 @@ public class ComplexHistory implements History {
 			return true;
 		}
 		
-		void cut() {
+		void snip() {
 			if (parent != null) {
 				parent.children.remove(this);
 				if (parent.selectedChild == this) {
