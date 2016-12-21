@@ -5,9 +5,6 @@ import java.util.Collections;
 import java.util.List;
 
 
-// TODO: limit size...
-// TODO: test...
-
 public class ComplexHistory implements History {
 
 	private int capacity;
