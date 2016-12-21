@@ -1,21 +1,25 @@
 package hu.webarticum.chm;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
+import java.util.List;
 
 public class CommandQueue implements History {
 	
-	private int maximumCapacity;
+	private int capacity;
 	
 	private LinkedList<Command> queue = new LinkedList<Command>();
 	
 	private int position = 0;
+
+	private final List<Listener> listeners = new ArrayList<>(1);
 	
 	public CommandQueue() {
 		this(-1);
 	}
 	
-	public CommandQueue(int maximumCapacity) {
-		this.maximumCapacity = maximumCapacity;
+	public CommandQueue(int capacity) {
+		this.capacity = capacity;
 	}
 	
 	@Override
@@ -26,12 +30,7 @@ public class CommandQueue implements History {
 			}
 			queue.add(command);
 			position++;
-			if (maximumCapacity >= 0) {
-				while (queue.size() > maximumCapacity) {
-					queue.removeFirst();
-					position--;
-				}
-			}
+			onChanged(Listener.OperationType.INSERT);
 			return true;
 		} else {
 			return false;
@@ -42,7 +41,8 @@ public class CommandQueue implements History {
 	public boolean hasNextCommand() {
 		return (queue.size() > position);
 	}
-	
+
+	@Override
 	public Command getNextCommand() {
 		if (hasNextCommand()) {
 			return queue.get(position);
@@ -79,6 +79,7 @@ public class CommandQueue implements History {
 				return false;
 			} else {
 				position++;
+				onChanged(Listener.OperationType.REDO);
 				return true;
 			}
 		}
@@ -94,6 +95,7 @@ public class CommandQueue implements History {
 				return false;
 			} else {
 				position--;
+				onChanged(Listener.OperationType.UNDO);
 				return true;
 			}
 		}
@@ -107,7 +109,9 @@ public class CommandQueue implements History {
 	@Override
 	public boolean moveTo(Command command) {
 		int commandPosition = queue.indexOf(command);
-		if (commandPosition == (-1)) {
+		if (commandPosition == position) {
+			return true;
+		} else if (commandPosition == (-1)) {
 			return false;
 		}
 		
@@ -129,7 +133,42 @@ public class CommandQueue implements History {
 			}
 		}
 		
+		position = targetPosition;
+
+		onChanged(Listener.OperationType.MOVE);
 		return true;
+	}
+
+	@Override
+	public void addListener(Listener listener) {
+		listeners.add(listener);
+	}
+	
+	@Override
+	public boolean removeListener(Listener listener) {
+		return listeners.remove(listener);
+	}
+
+	public void setCapacity(int capacity) {
+		this.capacity = capacity;
+		gc();
+	}
+
+	private void onChanged(Listener.OperationType operationType) {
+		gc();
+		
+		for (Listener listener: listeners) {
+			listener.changed(this, operationType);
+		}
+	}
+	
+	private void gc() {
+		if (capacity >= 0) {
+			while (queue.size() > capacity) {
+				queue.removeFirst();
+				position--;
+			}
+		}
 	}
 	
 }

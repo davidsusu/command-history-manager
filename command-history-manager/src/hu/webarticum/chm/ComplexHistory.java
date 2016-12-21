@@ -9,10 +9,29 @@ import java.util.List;
 // TODO: test...
 
 public class ComplexHistory implements History {
+
+	private int capacity;
+
+	private boolean gcOnInsert;
 	
 	private Node rootNode = new Node(null, null);
 	
 	private Node previousNode = rootNode;
+	
+	private final List<Listener> listeners = new ArrayList<>(1);
+	
+	public ComplexHistory() {
+		this(-1, false);
+	}
+
+	public ComplexHistory(int capacity) {
+		this(capacity, true);
+	}
+
+	public ComplexHistory(int capacity, boolean gcOnInsert) {
+		this.capacity = capacity;
+		this.gcOnInsert = gcOnInsert;
+	}
 	
 	@Override
 	public boolean executeAsNext(Command command) {
@@ -21,6 +40,7 @@ public class ComplexHistory implements History {
 		}
 		
 		previousNode = previousNode.branch(command);
+		onChanged(Listener.OperationType.INSERT);
 		return true;
 	}
 
@@ -28,10 +48,24 @@ public class ComplexHistory implements History {
 	public boolean hasNextCommand() {
 		return (previousNode.selectedChild != null);
 	}
-
+	
+	@Override
+	public Command getNextCommand() {
+		if (previousNode.selectedChild == null) {
+			return null;
+		}
+		
+		return previousNode.selectedChild.command;
+	}
+	
 	@Override
 	public boolean hasPreviousCommand() {
 		return (previousNode != rootNode);
+	}
+
+	@Override
+	public Command getPreviousCommand() {
+		return previousNode.command;
 	}
 
 	@Override
@@ -45,6 +79,7 @@ public class ComplexHistory implements History {
 		}
 		
 		previousNode = previousNode.selectedChild;
+		onChanged(Listener.OperationType.REDO);
 		return true;
 	}
 
@@ -59,18 +94,10 @@ public class ComplexHistory implements History {
 		}
 		
 		previousNode = previousNode.parent;
+		onChanged(Listener.OperationType.UNDO);
 		return true;
 	}
 	
-	@Override
-	public Command getPreviousCommand() {
-		if (previousNode == null) {
-			return null;
-		}
-		
-		return previousNode.command;
-	}
-
 	@Override
 	public boolean contains(Command command) {
 		return (lookUp(command) != null);
@@ -126,7 +153,35 @@ public class ComplexHistory implements History {
 			previousNode = commandPathNode;
 		}
 		
+		onChanged(Listener.OperationType.MOVE);
 		return true;
+	}
+	
+	@Override
+	public void addListener(Listener listener) {
+		listeners.add(listener);
+	}
+	
+	@Override
+	public boolean removeListener(Listener listener) {
+		return listeners.remove(listener);
+	}
+
+	public void setCapacity(int capacity) {
+		setCapacity(capacity, false);
+	}
+
+	public void setCapacity(int capacity, boolean forceGc) {
+		this.capacity = capacity;
+		if (forceGc || gcOnInsert) {
+			gc();
+		}
+	}
+	
+	public void gc() {
+		if (capacity >= 0) {
+			// TODO walk, sort, snip() ...
+		}
 	}
 	
 	private Node lookUp(Command command) {
@@ -150,6 +205,16 @@ public class ComplexHistory implements History {
 		}
 		
 		return null;
+	}
+
+	private void onChanged(Listener.OperationType operationType) {
+		if (operationType == Listener.OperationType.INSERT && gcOnInsert) {
+			gc();
+		}
+		
+		for (Listener listener: listeners) {
+			listener.changed(this, operationType);
+		}
 	}
 	
 	private class Node {
@@ -194,8 +259,6 @@ public class ComplexHistory implements History {
 			return true;
 		}
 		
-		// TODO ...
-		@SuppressWarnings("unused")
 		void snip() {
 			if (parent != null) {
 				parent.children.remove(this);
