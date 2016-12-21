@@ -256,13 +256,17 @@ public class ComplexHistory implements History {
 			return true;
 		}
 		
-		void snip() {
+		void ripOut() {
 			if (parent != null) {
 				parent.children.remove(this);
 				if (parent.selectedChild == this) {
 					parent.selectedChild = null;
 				}
 				parent = null;
+			}
+			selectedChild = null;
+			for (Node childNode: children) {
+				childNode.parent = null;
 			}
 		}
 		
