@@ -3,5 +3,4 @@
 *.dex.zip
 *.java.swp
 *.java.swo
-.settings/*
 bin/

@@ -56,6 +56,7 @@ public class CommandQueue implements History {
 		return (position > 0);
 	}
 
+	@Override
 	public Command getPreviousCommand() {
 		if (hasPreviousCommand()) {
 			return queue.get(position - 1);
@@ -105,10 +106,12 @@ public class CommandQueue implements History {
 
 	@Override
 	public boolean moveTo(Command command) {
-		int targetPosition = queue.indexOf(command);
-		if (targetPosition == (-1)) {
+		int commandPosition = queue.indexOf(command);
+		if (commandPosition == (-1)) {
 			return false;
 		}
+		
+		int targetPosition = commandPosition + 1;
 		
 		if (targetPosition > position) {
 			for (int i = position; i < targetPosition; i++) {

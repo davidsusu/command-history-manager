@@ -1,6 +1,7 @@
 package hu.webarticum.chm;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 
@@ -53,12 +54,21 @@ public class ComplexHistory implements History {
 			return false;
 		}
 		
-		if (!previousNode.command.execute()) {
+		if (!previousNode.command.rollBack()) {
 			return false;
 		}
 		
 		previousNode = previousNode.parent;
 		return true;
+	}
+	
+	@Override
+	public Command getPreviousCommand() {
+		if (previousNode == null) {
+			return null;
+		}
+		
+		return previousNode.command;
 	}
 
 	@Override
@@ -68,10 +78,55 @@ public class ComplexHistory implements History {
 
 	@Override
 	public boolean moveTo(Command command) {
+		if (previousNode.command == command) {
+			return true;
+		}
 		
-		// TODO
+		Node commandNode = lookUp(command);
 		
-		return false;
+		if (commandNode == null) {
+			return false;
+		}
+		
+		List<Node> commandPath = commandNode.getPath();
+		
+		if (commandPath.get(0) != rootNode) {
+			return false;
+		}
+		
+		List<Node> currentPath = previousNode.getPath();
+		
+		int commandPathSize = commandPath.size();
+		int currentPathSize = currentPath.size();
+		int commonSize = Math.min(commandPathSize, currentPathSize);
+		
+		int branchPosition = 0;
+		
+		for (int i = 0; i < commonSize; i++) {
+			if (commandPath.get(i) != currentPath.get(i)) {
+				break;
+			}
+			branchPosition = i + 1;
+		}
+		
+		for (int i = currentPathSize - 1; i >= branchPosition; i--) {
+			Node currentPathNode = currentPath.get(i);
+			if (!currentPathNode.command.rollBack()) {
+				previousNode = currentPathNode;
+				return false;
+			}
+		}
+		
+		for (int i = branchPosition; i < commandPathSize; i++) {
+			Node commandPathNode = commandPath.get(i);
+			if (!commandPathNode.command.execute()) {
+				return false;
+			}
+			commandPathNode.parent.select(commandPathNode);
+			previousNode = commandPathNode;
+		}
+		
+		return true;
 	}
 	
 	private Node lookUp(Command command) {
@@ -118,6 +173,18 @@ public class ComplexHistory implements History {
 			return selectedChild;
 		}
 		
+		List<Node> getPath() {
+			List<Node> parents = new ArrayList<>();
+			parents.add(this);
+			Node parent = this;
+			while (parent.parent != null) {
+				parent = parent.parent;
+				parents.add(parent);
+			}
+			Collections.reverse(parents);
+			return parents;
+		}
+		
 		boolean select(Node child) {
 			if (!children.contains(child)) {
 				return false;
@@ -127,6 +194,8 @@ public class ComplexHistory implements History {
 			return true;
 		}
 		
+		// TODO ...
+		@SuppressWarnings("unused")
 		void snip() {
 			if (parent != null) {
 				parent.children.remove(this);
@@ -137,6 +206,11 @@ public class ComplexHistory implements History {
 			}
 		}
 		
+		@Override
+		public String toString() {
+			return "Node of " + command;
+		}
+		
 	}
-
+	
 }
