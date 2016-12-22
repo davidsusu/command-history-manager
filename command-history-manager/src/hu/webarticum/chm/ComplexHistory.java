@@ -175,6 +175,10 @@ public class ComplexHistory implements History {
 		}
 	}
 	
+	public void setGcOnInsert(boolean gcOnInsert) {
+		this.gcOnInsert = gcOnInsert;
+	}
+	
 	public void gc() {
 		if (capacity >= 0) {
 			// TODO walk, sort, snip() ...
