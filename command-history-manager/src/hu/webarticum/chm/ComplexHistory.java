@@ -181,7 +181,26 @@ public class ComplexHistory implements History {
 	
 	public void gc() {
 		if (capacity >= 0) {
-			// TODO walk, sort, snip() ...
+			
+			// TODO step radius one by one...
+			
+			// initial:
+			Node selectedAncestor = previousNode;
+			Node selectedDescendant = previousNode.selectedChild;
+			List<Node> collaterals = new ArrayList<>();
+			List<Node> alternativeDescendants = new ArrayList<>(previousNode.children);
+			if (previousNode.selectedChild != null) {
+				alternativeDescendants.remove(previousNode.selectedChild);
+			}
+			
+			/*
+			while (true) {
+				// check size
+				// if capacity reached, remove nodes in a specified order
+				// if not, prepare next level: collect new datas
+			}
+			*/
+			
 		}
 	}
 	
