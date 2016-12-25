@@ -17,9 +17,11 @@ public interface History {
 	public boolean rollBackPrevious();
 	
 	public boolean contains(Command command);
-	
-	public boolean moveTo(Command command);
 
+	public boolean moveBefore(Command command);
+	
+	public boolean moveAfter(Command command);
+	
 	public void addListener(Listener listener);
 
 	public boolean removeListener(Listener listener);

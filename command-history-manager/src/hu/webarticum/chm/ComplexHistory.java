@@ -101,7 +101,16 @@ public class ComplexHistory implements History {
 	}
 
 	@Override
-	public boolean moveTo(Command command) {
+	public boolean moveBefore(Command command) {
+		return moveTo(command, true);
+	}
+	
+	@Override
+	public boolean moveAfter(Command command) {
+		return moveTo(command, false);
+	}
+	
+	private boolean moveTo(Command command, boolean before) {
 		if (previousNode.command == command) {
 			return true;
 		}
@@ -141,13 +150,23 @@ public class ComplexHistory implements History {
 			}
 		}
 		
-		for (int i = branchPosition; i < commandPathSize; i++) {
-			Node commandPathNode = commandPath.get(i);
-			if (!commandPathNode.command.execute()) {
+		previousNode = currentPath.get(branchPosition - 1);
+		
+		if (before && commandPathSize == branchPosition) {
+			if (!command.rollBack()) {
 				return false;
 			}
-			commandPathNode.parent.select(commandPathNode);
-			previousNode = commandPathNode;
+			previousNode = commandNode.parent;
+		} else {
+			int targetPosition = before ? commandPathSize - 1 : commandPathSize;
+			for (int i = branchPosition; i < targetPosition; i++) {
+				Node commandPathNode = commandPath.get(i);
+				if (!commandPathNode.command.execute()) {
+					return false;
+				}
+				commandPathNode.parent.select(commandPathNode);
+				previousNode = commandPathNode;
+			}
 		}
 		
 		onChanged(Listener.OperationType.MOVE);
@@ -241,9 +260,9 @@ public class ComplexHistory implements History {
 		
 		Node parent;
 		
-		final Command command;
+		Command command;
 		
-		final List<Node> children = new ArrayList<Node>();
+		List<Node> children = new ArrayList<Node>();
 		
 		Node selectedChild = null;
 		
