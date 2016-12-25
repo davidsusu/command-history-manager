@@ -200,27 +200,142 @@ public class ComplexHistory implements History {
 	
 	public void gc() {
 		if (capacity >= 0) {
-			
-			// TODO step radius one by one...
-			
-			// initial:
-			Node selectedAncestor = previousNode;
-			Node selectedDescendant = previousNode.selectedChild;
-			List<Node> collaterals = new ArrayList<>();
-			List<Node> alternativeDescendants = new ArrayList<>(previousNode.children);
-			if (previousNode.selectedChild != null) {
-				alternativeDescendants.remove(previousNode.selectedChild);
+			List<Node> aboveNodes = new ArrayList<Node>();
+			Node parentNode = previousNode;
+			while (parentNode != null) {
+				aboveNodes.add(parentNode);
+				parentNode = parentNode.parent;
+			}
+
+			List<Node> belowNodes = new ArrayList<Node>();
+			Node childNode = previousNode;
+			while (childNode.selectedChild != null) {
+				childNode = childNode.selectedChild;
+				belowNodes.add(childNode);
 			}
 			
-			/*
+			boolean firstIteration = true;
+			int remainingCapacity = (capacity == Integer.MAX_VALUE) ? capacity : capacity + 1;
+			
 			while (true) {
-				// check size
-				// if capacity reached, remove nodes in a specified order
-				// if not, prepare next level: collect new datas
+				int aboveCount = aboveNodes.size();
+				int belowCount = belowNodes.size();
+				
+				int levelCount = aboveCount + belowCount;
+				
+				if (levelCount == 0) {
+					break;
+				}
+				
+				if (levelCount >= remainingCapacity) {
+					List<Node> nodesToRipOut = new ArrayList<>();
+					
+					int keepBelowCount = (remainingCapacity + 1) / 2 - 1;
+					if (keepBelowCount > belowCount) {
+						keepBelowCount = belowCount;
+					}
+					
+					int keepAboveCount = remainingCapacity - keepBelowCount;
+					if (keepAboveCount > aboveCount) {
+						keepAboveCount = aboveCount;
+						keepBelowCount = remainingCapacity - keepAboveCount;
+					}
+					
+					for (int i = 0; i < keepBelowCount; i++) {
+						Node belowNode = belowNodes.get(i);
+						List<Node> reorderedChildren = gcGetChildrenReordered(belowNode);
+						for (Node belowChildNode: reorderedChildren) {
+							if (!firstIteration || belowChildNode != belowNode.selectedChild) {
+								nodesToRipOut.add(belowChildNode);
+							}
+						}
+					}
+					for (int i = keepBelowCount; i < belowCount; i++) {
+						Node belowNode = belowNodes.get(i);
+						nodesToRipOut.add(belowNode);
+						if (firstIteration) {
+							break;
+						}
+					}
+
+					for (int i = 0; i < keepAboveCount; i++) {
+						Node aboveNode = aboveNodes.get(i);
+						List<Node> reorderedChildren = gcGetChildrenReordered(aboveNode);
+						for (Node aboveChildNode: reorderedChildren) {
+							if (!firstIteration || aboveChildNode != aboveNode.selectedChild) {
+								nodesToRipOut.add(aboveChildNode);
+							}
+						}
+					}
+					if (firstIteration) {
+						if (keepAboveCount < aboveCount) {
+							Node lastKeepingAboveNode = aboveNodes.get(keepAboveCount - 1);
+							nodesToRipOut.add(lastKeepingAboveNode.parent);
+							rootNode = lastKeepingAboveNode;
+							rootNode.children.clear();
+							if (rootNode.selectedChild != null) {
+								rootNode.children.add(rootNode.selectedChild);
+							}
+							rootNode.command = null;
+						}
+					} else {
+						for (int i = keepAboveCount; i < aboveCount; i++) {
+							Node aboveNode = aboveNodes.get(i);
+							nodesToRipOut.add(aboveNode);
+						}
+					}
+					
+					for (Node nodeToRipOut: nodesToRipOut) {
+						nodeToRipOut.ripOut();
+					}
+					
+					break;
+				}
+				
+				List<Node> newAboveNodes = new ArrayList<>();
+				for (Node aboveNode: aboveNodes) {
+					List<Node> reorderedChildren = gcGetChildrenReordered(aboveNode);
+					if (firstIteration && aboveNode.selectedChild != null) {
+						reorderedChildren.remove(aboveNode.selectedChild);
+					}
+					newAboveNodes.addAll(reorderedChildren);
+				}
+
+				List<Node> newBelowNodes = new ArrayList<>();
+				for (Node belowNode: belowNodes) {
+					List<Node> reorderedChildren = gcGetChildrenReordered(belowNode);
+					if (firstIteration && belowNode.selectedChild != null) {
+						reorderedChildren.remove(belowNode.selectedChild);
+					}
+					newAboveNodes.addAll(reorderedChildren);
+				}
+				
+				aboveNodes = newAboveNodes;
+				belowNodes = newBelowNodes;
+				
+				remainingCapacity -= levelCount;
+				firstIteration = false;
 			}
-			*/
-			
 		}
+	}
+
+	private List<Node> gcGetChildrenReordered(Node node) {
+		Node selectedChild = node.selectedChild;
+		List<Node> result = new ArrayList<>(node.children);
+		if (!result.isEmpty()) {
+			Collections.reverse(result);
+			if (selectedChild != null) {
+				Node firstItem = result.get(0);
+				if (firstItem != selectedChild) {
+					int selectedIndex = result.indexOf(selectedChild);
+					if (selectedIndex != (-1)) {
+						result.set(0, selectedChild);
+						result.set(selectedIndex, firstItem);
+					}
+				}
+			}
+		}
+		return result;
 	}
 	
 	private Node lookUp(Command command) {
