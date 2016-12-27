@@ -7,13 +7,13 @@ import java.util.TreeSet;
 
 import org.junit.Test;
 
-public class CommandQueueTest {
+public class LinearHistoryTest {
 
 	@Test
 	public void testStatusStackOfASet() {
 		final Set<String> words = new TreeSet<String>();
 		
-		CommandQueue commandQueue = new CommandQueue();
+		LinearHistory commandQueue = new LinearHistory();
 		
 		class AddToWordsCommand extends AbstractCommand {
 			

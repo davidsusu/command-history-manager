@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
-public class CommandQueue implements History {
+public class LinearHistory implements History {
 	
 	private int capacity;
 	
@@ -14,11 +14,11 @@ public class CommandQueue implements History {
 
 	private final List<Listener> listeners = new ArrayList<>(1);
 	
-	public CommandQueue() {
+	public LinearHistory() {
 		this(-1);
 	}
 	
-	public CommandQueue(int capacity) {
+	public LinearHistory(int capacity) {
 		this.capacity = capacity;
 	}
 

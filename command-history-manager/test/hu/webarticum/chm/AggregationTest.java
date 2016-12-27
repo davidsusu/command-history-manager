@@ -8,7 +8,7 @@ public class AggregationTest {
 
 	@Test
 	public void test() {
-		History history = new CommandQueue();
+		History history = new LinearHistory();
 		
 		SampleDocument document = new SampleDocument(history);
 		

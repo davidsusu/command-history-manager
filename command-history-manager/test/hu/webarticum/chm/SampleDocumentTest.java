@@ -95,7 +95,7 @@ public class SampleDocumentTest {
 		assertEquals(" A X|Z B C ", document.toString());
 		assertSame(liveCommand2, history.getPrevious());
 		
-		if (history instanceof CommandQueue) {
+		if (history instanceof LinearHistory) {
 			assertEquals(false, history.moveAfter(deadCommand));
 			assertEquals(" A X|Z B C ", document.toString());
 		} else if (history instanceof ComplexHistory) {
@@ -115,7 +115,7 @@ public class SampleDocumentTest {
 	@Parameters
 	public static Collection<History> data() {
 		List<History> data = new ArrayList<>();
-		data.add(new CommandQueue());
+		data.add(new LinearHistory());
 		data.add(new ComplexHistory());
 		return data;
 	}
