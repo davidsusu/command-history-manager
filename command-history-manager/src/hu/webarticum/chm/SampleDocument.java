@@ -47,6 +47,17 @@ public class SampleDocument {
 		return history.addAndExecute(new PrintCommand(position, character));
 	}
 	
+	public boolean printChars(char... characters) {
+		CommandAggregation aggregation = new CommandAggregation();
+		for (int i = 0; i < characters.length; i++) {
+			char character = characters[i];
+			if (!aggregation.add(new PrintCommand(position + i, character))) {
+				return false;
+			}
+		}
+		return history.addAndExecute(aggregation);
+	}
+	
 	public List<Character> getCharacters() {
 		return new ArrayList<Character>(characters);
 	}
