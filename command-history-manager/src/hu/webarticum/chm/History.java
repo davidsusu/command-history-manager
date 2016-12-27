@@ -11,12 +11,12 @@ public interface History {
 	public boolean hasNext();
 
 	public Command getNext();
+
+	public boolean executeNext();
 	
 	public boolean hasPrevious();
 
 	public Command getPrevious();
-	
-	public boolean executeNext();
 	
 	public boolean rollBackPrevious();
 	
