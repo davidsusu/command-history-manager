@@ -1,8 +1,12 @@
 package hu.webarticum.chm;
 
+import java.util.Date;
+
 abstract public class AbstractCommand implements Command {
 	
 	private boolean executed = false;
+	
+	private Date firstExecutionTime = null;
 	
 	@Override
 	public boolean execute() {
@@ -11,6 +15,7 @@ abstract public class AbstractCommand implements Command {
 		} else {
 			if (_execute()) {
 				executed = true;
+				firstExecutionTime = new Date();
 				return true;
 			} else {
 				return false;
@@ -35,6 +40,11 @@ abstract public class AbstractCommand implements Command {
 	@Override
 	public boolean isExecuted() {
 		return executed;
+	}
+	
+	@Override
+	public Date getTime() {
+		return firstExecutionTime;
 	}
 	
 	abstract protected boolean _execute();

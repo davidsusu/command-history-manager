@@ -1,5 +1,7 @@
 package hu.webarticum.chm;
 
+import java.util.Date;
+
 public interface Command {
 	
 	public boolean execute();
@@ -7,5 +9,7 @@ public interface Command {
 	public boolean rollBack();
 	
 	public boolean isExecuted();
+	
+	public Date getTime();
 	
 }
