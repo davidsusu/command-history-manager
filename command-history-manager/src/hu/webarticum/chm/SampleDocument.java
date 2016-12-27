@@ -40,11 +40,11 @@ public class SampleDocument {
 			return false;
 		}
 		
-		return history.executeAsNext(new RemoveCommand(position));
+		return history.addAndExecute(new RemoveCommand(position));
 	}
 
 	public boolean printChar(char character) {
-		return history.executeAsNext(new PrintCommand(position, character));
+		return history.addAndExecute(new PrintCommand(position, character));
 	}
 	
 	public List<Character> getCharacters() {

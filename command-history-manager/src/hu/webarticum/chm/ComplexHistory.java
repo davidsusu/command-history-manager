@@ -31,7 +31,7 @@ public class ComplexHistory implements History {
 	}
 	
 	@Override
-	public boolean executeAsNext(Command command) {
+	public boolean addAndExecute(Command command) {
 		if (!command.execute()) {
 			return false;
 		}

@@ -49,17 +49,17 @@ public class CommandQueueTest {
 			
 		};
 		
-		commandQueue.executeAsNext(new AddToWordsCommand("foo"));
+		commandQueue.addAndExecute(new AddToWordsCommand("foo"));
 
 		assertTrue(words.contains("foo"));
 		assertFalse(words.contains("bar"));
 		
-		commandQueue.executeAsNext(new AddToWordsCommand("foo"));
+		commandQueue.addAndExecute(new AddToWordsCommand("foo"));
 
 		assertTrue(words.contains("foo"));
 		assertFalse(words.contains("bar"));
 		
-		commandQueue.executeAsNext(new AddToWordsCommand("bar"));
+		commandQueue.addAndExecute(new AddToWordsCommand("bar"));
 
 		assertTrue(words.contains("foo"));
 		assertTrue(words.contains("bar"));

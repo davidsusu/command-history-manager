@@ -2,7 +2,7 @@ package hu.webarticum.chm;
 
 public interface History {
 	
-	public boolean executeAsNext(Command command);
+	public boolean addAndExecute(Command command);
 	
 	public boolean hasNextCommand();
 
