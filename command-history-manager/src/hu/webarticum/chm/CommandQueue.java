@@ -22,6 +22,7 @@ public class CommandQueue implements History {
 		this.capacity = capacity;
 	}
 
+	@Override
 	public boolean isEmpty() {
 		return queue.isEmpty();
 	}

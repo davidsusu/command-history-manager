@@ -31,6 +31,11 @@ public class ComplexHistory implements History {
 	}
 
 	@Override
+	public boolean isEmpty() {
+		return rootNode.children.isEmpty();
+	}
+	
+	@Override
 	public boolean contains(Command command) {
 		return (lookUp(command) != null);
 	}

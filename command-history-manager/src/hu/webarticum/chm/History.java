@@ -2,6 +2,8 @@ package hu.webarticum.chm;
 
 public interface History {
 
+	public boolean isEmpty();
+
 	public boolean contains(Command command);
 
 	public boolean addAndExecute(Command command);

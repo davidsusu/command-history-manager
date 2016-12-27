@@ -23,8 +23,14 @@ public class SampleDocumentTest {
 	@Test
 	public void test() {
 		SampleDocument document = new SampleDocument(history);
+		
+		assertTrue(history.isEmpty());
+		
 		assertEquals("|", document.toString());
 		document.printChar('A');
+
+		assertFalse(history.isEmpty());
+		
 		assertEquals(" A|", document.toString());
 		document.printChar('B');
 		assertEquals(" A B|", document.toString());
@@ -32,6 +38,7 @@ public class SampleDocumentTest {
 		assertEquals(" A|B ", document.toString());
 		
 		Command beforeDeadCommand = history.getPrevious();
+		assertTrue(history.contains(beforeDeadCommand));
 		
 		document.printChar('W');
 		assertEquals(" A W|B ", document.toString());
@@ -108,7 +115,7 @@ public class SampleDocumentTest {
 	@Parameters
 	public static Collection<History> data() {
 		List<History> data = new ArrayList<>();
-		//data.add(new CommandQueue());
+		data.add(new CommandQueue());
 		data.add(new ComplexHistory());
 		return data;
 	}
