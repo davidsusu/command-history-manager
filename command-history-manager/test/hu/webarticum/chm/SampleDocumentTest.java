@@ -31,18 +31,18 @@ public class SampleDocumentTest {
 		document.moveTo(1);
 		assertEquals(" A|B ", document.toString());
 		
-		Command beforeDeadCommand = history.getPreviousCommand();
+		Command beforeDeadCommand = history.getPrevious();
 		
 		document.printChar('W');
 		assertEquals(" A W|B ", document.toString());
 		
-		Command deadCommand = history.getPreviousCommand();
+		Command deadCommand = history.getPrevious();
 		
 		history.rollBackPrevious();
 		assertEquals(" A|B ", document.toString());
 
-		assertSame(beforeDeadCommand, history.getPreviousCommand());
-		assertSame(deadCommand, history.getNextCommand());
+		assertSame(beforeDeadCommand, history.getPrevious());
+		assertSame(deadCommand, history.getNext());
 		
 		document.moveToEnd();
 		assertEquals(" A B|", document.toString());
@@ -55,7 +55,7 @@ public class SampleDocumentTest {
 		document.printChar('Y');
 		assertEquals(" A X Y|B C ", document.toString());
 
-		Command liveCommand1 = history.getPreviousCommand();
+		Command liveCommand1 = history.getPrevious();
 
 		document.printChar('Z');
 		assertEquals(" A X Y Z|B C ", document.toString());
@@ -64,7 +64,7 @@ public class SampleDocumentTest {
 		document.removeChar();
 		assertEquals(" A X|Z B C ", document.toString());
 		
-		Command liveCommand2 = history.getPreviousCommand();
+		Command liveCommand2 = history.getPrevious();
 
 		history.rollBackPrevious();
 		assertEquals(" A X Y|Z B C ", document.toString());
@@ -86,7 +86,7 @@ public class SampleDocumentTest {
 		
 		assertEquals(true, history.moveAfter(liveCommand2));
 		assertEquals(" A X|Z B C ", document.toString());
-		assertSame(liveCommand2, history.getPreviousCommand());
+		assertSame(liveCommand2, history.getPrevious());
 		
 		if (history instanceof CommandQueue) {
 			assertEquals(false, history.moveAfter(deadCommand));

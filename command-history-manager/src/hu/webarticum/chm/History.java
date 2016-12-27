@@ -1,23 +1,23 @@
 package hu.webarticum.chm;
 
 public interface History {
-	
+
+	public boolean contains(Command command);
+
 	public boolean addAndExecute(Command command);
 	
-	public boolean hasNextCommand();
+	public boolean hasNext();
 
-	public Command getNextCommand();
+	public Command getNext();
 	
-	public boolean hasPreviousCommand();
+	public boolean hasPrevious();
 
-	public Command getPreviousCommand();
+	public Command getPrevious();
 	
 	public boolean executeNext();
 	
 	public boolean rollBackPrevious();
 	
-	public boolean contains(Command command);
-
 	public boolean moveBefore(Command command);
 	
 	public boolean moveAfter(Command command);

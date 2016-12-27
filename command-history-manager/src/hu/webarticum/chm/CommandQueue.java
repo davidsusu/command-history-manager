@@ -21,7 +21,16 @@ public class CommandQueue implements History {
 	public CommandQueue(int capacity) {
 		this.capacity = capacity;
 	}
-	
+
+	public boolean isEmpty() {
+		return queue.isEmpty();
+	}
+
+	@Override
+	public boolean contains(Command command) {
+		return queue.contains(command);
+	}
+
 	@Override
 	public boolean addAndExecute(Command command) {
 		if (command.execute()) {
@@ -38,13 +47,13 @@ public class CommandQueue implements History {
 	}
 
 	@Override
-	public boolean hasNextCommand() {
+	public boolean hasNext() {
 		return (queue.size() > position);
 	}
 
 	@Override
-	public Command getNextCommand() {
-		if (hasNextCommand()) {
+	public Command getNext() {
+		if (hasNext()) {
 			return queue.get(position);
 		} else {
 			return null;
@@ -52,29 +61,11 @@ public class CommandQueue implements History {
 	}
 
 	@Override
-	public boolean hasPreviousCommand() {
-		return (position > 0);
-	}
-
-	@Override
-	public Command getPreviousCommand() {
-		if (hasPreviousCommand()) {
-			return queue.get(position - 1);
-		} else {
-			return null;
-		}
-	}
-	
-	public boolean isEmpty() {
-		return queue.isEmpty();
-	}
-
-	@Override
 	public boolean executeNext() {
-		if (!hasNextCommand()) {
+		if (!hasNext()) {
 			return false;
 		} else {
-			Command command = getNextCommand();
+			Command command = getNext();
 			if (!command.execute()) {
 				return false;
 			} else {
@@ -86,11 +77,25 @@ public class CommandQueue implements History {
 	}
 
 	@Override
+	public boolean hasPrevious() {
+		return (position > 0);
+	}
+
+	@Override
+	public Command getPrevious() {
+		if (hasPrevious()) {
+			return queue.get(position - 1);
+		} else {
+			return null;
+		}
+	}
+	
+	@Override
 	public boolean rollBackPrevious() {
-		if (!hasPreviousCommand()) {
+		if (!hasPrevious()) {
 			return false;
 		} else {
-			Command command = getPreviousCommand();
+			Command command = getPrevious();
 			if (!command.rollBack()) {
 				return false;
 			} else {
@@ -99,11 +104,6 @@ public class CommandQueue implements History {
 				return true;
 			}
 		}
-	}
-
-	@Override
-	public boolean contains(Command command) {
-		return queue.contains(command);
 	}
 
 	@Override

@@ -29,7 +29,12 @@ public class ComplexHistory implements History {
 		this.capacity = capacity;
 		this.gcOnInsert = gcOnInsert;
 	}
-	
+
+	@Override
+	public boolean contains(Command command) {
+		return (lookUp(command) != null);
+	}
+
 	@Override
 	public boolean addAndExecute(Command command) {
 		if (!command.execute()) {
@@ -42,27 +47,17 @@ public class ComplexHistory implements History {
 	}
 
 	@Override
-	public boolean hasNextCommand() {
+	public boolean hasNext() {
 		return (previousNode.selectedChild != null);
 	}
 	
 	@Override
-	public Command getNextCommand() {
+	public Command getNext() {
 		if (previousNode.selectedChild == null) {
 			return null;
 		}
 		
 		return previousNode.selectedChild.command;
-	}
-	
-	@Override
-	public boolean hasPreviousCommand() {
-		return (previousNode != rootNode);
-	}
-
-	@Override
-	public Command getPreviousCommand() {
-		return previousNode.command;
 	}
 
 	@Override
@@ -81,6 +76,16 @@ public class ComplexHistory implements History {
 	}
 
 	@Override
+	public boolean hasPrevious() {
+		return (previousNode != rootNode);
+	}
+
+	@Override
+	public Command getPrevious() {
+		return previousNode.command;
+	}
+
+	@Override
 	public boolean rollBackPrevious() {
 		if (previousNode == rootNode) {
 			return false;
@@ -95,11 +100,6 @@ public class ComplexHistory implements History {
 		return true;
 	}
 	
-	@Override
-	public boolean contains(Command command) {
-		return (lookUp(command) != null);
-	}
-
 	@Override
 	public boolean moveBefore(Command command) {
 		return moveTo(command, true);
