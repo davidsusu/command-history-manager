@@ -344,6 +344,10 @@ public class ComplexHistory implements History {
 	}
 	
 	private Node lookUp(Command command) {
+		if (command == null) {
+			return null;
+		}
+		
 		if (previousNode.command == command) {
 			return previousNode;
 		}
