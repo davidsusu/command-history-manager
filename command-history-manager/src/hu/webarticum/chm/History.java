@@ -1,7 +1,7 @@
 package hu.webarticum.chm;
 
-public interface History {
-
+public interface History extends Iterable<Command> {
+	
 	public boolean isEmpty();
 
 	public boolean contains(Command command);

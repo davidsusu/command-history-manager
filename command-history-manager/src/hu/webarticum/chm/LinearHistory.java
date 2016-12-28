@@ -1,6 +1,8 @@
 package hu.webarticum.chm;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -20,6 +22,11 @@ public class LinearHistory implements History {
 	
 	public LinearHistory(int capacity) {
 		this.capacity = capacity;
+	}
+
+	@Override
+	public Iterator<Command> iterator() {
+		return Collections.unmodifiableList(queue).iterator();
 	}
 
 	@Override

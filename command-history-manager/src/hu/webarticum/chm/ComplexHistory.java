@@ -2,7 +2,9 @@ package hu.webarticum.chm;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
+import java.util.NoSuchElementException;
 
 
 public class ComplexHistory implements History {
@@ -30,6 +32,11 @@ public class ComplexHistory implements History {
 		this.gcOnInsert = gcOnInsert;
 	}
 
+	@Override
+	public Iterator<Command> iterator() {
+		return new SelectedRouteIterator(rootNode);
+	}
+	
 	@Override
 	public boolean isEmpty() {
 		return rootNode.children.isEmpty();
@@ -441,6 +448,35 @@ public class ComplexHistory implements History {
 			return "Node of " + command;
 		}
 		
+	}
+	
+	private class SelectedRouteIterator implements Iterator<Command> {
+		
+		private Node previousNode;
+		
+		public SelectedRouteIterator(Node rootNode) {
+			this.previousNode = rootNode;
+		}
+
+		@Override
+		public boolean hasNext() {
+			return (previousNode.selectedChild != null);
+		}
+
+		@Override
+		public Command next() {
+			if (previousNode.selectedChild == null) {
+				throw new NoSuchElementException();
+			}
+			previousNode = previousNode.selectedChild;
+			return previousNode.command;
+		}
+
+		@Override
+		public void remove() {
+			throw new UnsupportedOperationException();
+		}
+
 	}
 	
 }

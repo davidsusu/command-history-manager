@@ -1,6 +1,8 @@
 package hu.webarticum.chm;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 
 public class SingleCommandHistory implements History {
@@ -8,6 +10,15 @@ public class SingleCommandHistory implements History {
 	private Command command = null;
 
 	private final List<Listener> listeners = new ArrayList<>(1);
+	
+	@Override
+	public Iterator<Command> iterator() {
+		if (command == null) {
+			return Collections.<Command>emptyIterator();
+		} else {
+			return Collections.singletonList(command).iterator();
+		}
+	}
 	
 	@Override
 	public boolean isEmpty() {
