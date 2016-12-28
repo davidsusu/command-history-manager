@@ -1,5 +1,7 @@
 package hu.webarticum.chm;
 
+import java.util.Iterator;
+
 /**
  * Stores a history of commands based on each other.
  * 
@@ -8,6 +10,14 @@ package hu.webarticum.chm;
 
 public interface History extends Iterable<Command> {
 
+    /**
+     * Returns an iterator which iterates through the last executed path's commands.
+     *
+     * @return an iterator which iterates through the last executed path's commands
+     */
+	@Override
+	public Iterator<Command> iterator();
+	
     /**
      * Returns {@code true} if this history contains no commands.
      *
