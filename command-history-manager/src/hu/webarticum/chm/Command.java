@@ -23,7 +23,7 @@ public interface Command {
 	public boolean rollBack();
 
 	/**
-	 * Returns {@code true} if command have been already executed and was not rolled back.
+	 * Returns {@code true} if command have been already executed and is not rolled back.
 	 * 
 	 * @return {@code true} if command have been already executed
 	 */
