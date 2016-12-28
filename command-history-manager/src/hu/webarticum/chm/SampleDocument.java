@@ -10,7 +10,7 @@ public class SampleDocument {
 	
 	private int position = 0;
 	
-	private LinkedList<Character> characters = new LinkedList<>();
+	private LinkedList<Character> characters = new LinkedList<Character>();
 	
 	public SampleDocument(History history) {
 		this.history = history;

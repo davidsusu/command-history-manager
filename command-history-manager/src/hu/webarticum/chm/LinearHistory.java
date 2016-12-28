@@ -14,7 +14,7 @@ public class LinearHistory implements History {
 	
 	private int position = 0;
 
-	private final List<Listener> listeners = new ArrayList<>(1);
+	private final List<Listener> listeners = new ArrayList<Listener>(1);
 	
 	public LinearHistory() {
 		this(-1);

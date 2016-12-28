@@ -17,7 +17,7 @@ public class ComplexHistory implements History {
 	
 	private InternalNode previousNode = rootNode;
 	
-	private final List<Listener> listeners = new ArrayList<>(1);
+	private final List<Listener> listeners = new ArrayList<Listener>(1);
 	
 	public ComplexHistory() {
 		this(-1, false);
@@ -248,7 +248,7 @@ public class ComplexHistory implements History {
 				}
 				
 				if (levelCount >= remainingCapacity) {
-					List<InternalNode> nodesToRipOut = new ArrayList<>();
+					List<InternalNode> nodesToRipOut = new ArrayList<InternalNode>();
 					
 					int keepBelowCount = (remainingCapacity + 1) / 2 - 1;
 					if (keepBelowCount > belowCount) {
@@ -312,7 +312,7 @@ public class ComplexHistory implements History {
 					break;
 				}
 				
-				List<InternalNode> newAboveNodes = new ArrayList<>();
+				List<InternalNode> newAboveNodes = new ArrayList<InternalNode>();
 				for (InternalNode aboveNode: aboveNodes) {
 					List<InternalNode> reorderedChildren = gcGetChildrenReordered(aboveNode);
 					if (firstIteration && aboveNode.selectedChild != null) {
@@ -321,7 +321,7 @@ public class ComplexHistory implements History {
 					newAboveNodes.addAll(reorderedChildren);
 				}
 
-				List<InternalNode> newBelowNodes = new ArrayList<>();
+				List<InternalNode> newBelowNodes = new ArrayList<InternalNode>();
 				for (InternalNode belowNode: belowNodes) {
 					List<InternalNode> reorderedChildren = gcGetChildrenReordered(belowNode);
 					if (firstIteration && belowNode.selectedChild != null) {
@@ -341,7 +341,7 @@ public class ComplexHistory implements History {
 
 	private List<InternalNode> gcGetChildrenReordered(InternalNode node) {
 		InternalNode selectedChild = node.selectedChild;
-		List<InternalNode> result = new ArrayList<>(node.children);
+		List<InternalNode> result = new ArrayList<InternalNode>(node.children);
 		if (!result.isEmpty()) {
 			Collections.reverse(result);
 			if (selectedChild != null) {
@@ -417,7 +417,7 @@ public class ComplexHistory implements History {
 		}
 		
 		List<InternalNode> getPath() {
-			List<InternalNode> parents = new ArrayList<>();
+			List<InternalNode> parents = new ArrayList<InternalNode>();
 			parents.add(this);
 			InternalNode parent = this;
 			while (parent.parent != null) {

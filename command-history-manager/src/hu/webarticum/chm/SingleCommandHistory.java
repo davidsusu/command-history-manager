@@ -9,7 +9,7 @@ public class SingleCommandHistory implements History {
 
 	private Command command = null;
 
-	private final List<Listener> listeners = new ArrayList<>(1);
+	private final List<Listener> listeners = new ArrayList<Listener>(1);
 	
 	@Override
 	public Iterator<Command> iterator() {

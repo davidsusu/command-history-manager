@@ -5,7 +5,7 @@ import java.util.List;
 
 public class CommandAggregation extends AbstractCommand {
 
-	private List<Command> commands = new ArrayList<>();
+	private List<Command> commands = new ArrayList<Command>();
 	
 	private boolean closed = false;
 	

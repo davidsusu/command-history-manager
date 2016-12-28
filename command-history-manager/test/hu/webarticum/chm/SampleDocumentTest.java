@@ -114,7 +114,7 @@ public class SampleDocumentTest {
 	
 	@Parameters
 	public static Collection<History> data() {
-		List<History> data = new ArrayList<>();
+		List<History> data = new ArrayList<History>();
 		data.add(new LinearHistory());
 		data.add(new ComplexHistory());
 		return data;
