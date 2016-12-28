@@ -220,6 +220,8 @@ public class ComplexHistory implements History {
 	
 	public void gc() {
 		if (capacity >= 0) {
+			boolean changed = false;
+			
 			List<InternalNode> aboveNodes = new ArrayList<InternalNode>();
 			InternalNode parentNode = previousNode;
 			while (parentNode != null) {
@@ -307,6 +309,7 @@ public class ComplexHistory implements History {
 					
 					for (InternalNode nodeToRipOut: nodesToRipOut) {
 						nodeToRipOut.ripOut();
+						changed = true;
 					}
 					
 					break;
@@ -335,6 +338,10 @@ public class ComplexHistory implements History {
 				
 				remainingCapacity -= levelCount;
 				firstIteration = false;
+			}
+			
+			if (changed) {
+				onChanged(Listener.OperationType.CHANGE);
 			}
 		}
 	}

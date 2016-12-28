@@ -144,6 +144,11 @@ public interface History extends Iterable<Command> {
 			 */
 			MOVE,
 			
+			/**
+			 * Any operation without any execution or roll back
+			 */
+			CHANGE,
+			
 		}
 		
 		/**
