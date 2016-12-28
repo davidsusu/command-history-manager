@@ -13,9 +13,9 @@ public class ComplexHistory implements History {
 
 	private boolean gcOnInsert;
 	
-	private Node rootNode = new Node(null, null);
+	private InternalNode rootNode = new InternalNode(null, null);
 	
-	private Node previousNode = rootNode;
+	private InternalNode previousNode = rootNode;
 	
 	private final List<Listener> listeners = new ArrayList<>(1);
 	
@@ -35,6 +35,14 @@ public class ComplexHistory implements History {
 	@Override
 	public Iterator<Command> iterator() {
 		return new SelectedRouteIterator(rootNode);
+	}
+
+	public CommandNode getRootCommandNode() {
+		return new CommandNode(rootNode);
+	}
+
+	public CommandNode getPreviousCommandNode() {
+		return new CommandNode(previousNode);
 	}
 	
 	@Override
@@ -127,19 +135,19 @@ public class ComplexHistory implements History {
 			return true;
 		}
 		
-		Node commandNode = lookUp(command);
+		InternalNode commandNode = lookUp(command);
 		
 		if (commandNode == null) {
 			return false;
 		}
 		
-		List<Node> commandPath = commandNode.getPath();
+		List<InternalNode> commandPath = commandNode.getPath();
 		
 		if (commandPath.get(0) != rootNode) {
 			return false;
 		}
 		
-		List<Node> currentPath = previousNode.getPath();
+		List<InternalNode> currentPath = previousNode.getPath();
 		
 		int commandPathSize = commandPath.size();
 		int currentPathSize = currentPath.size();
@@ -155,7 +163,7 @@ public class ComplexHistory implements History {
 		}
 		
 		for (int i = currentPathSize - 1; i >= branchPosition; i--) {
-			Node currentPathNode = currentPath.get(i);
+			InternalNode currentPathNode = currentPath.get(i);
 			if (!currentPathNode.command.rollBack()) {
 				previousNode = currentPathNode;
 				return false;
@@ -172,7 +180,7 @@ public class ComplexHistory implements History {
 		} else {
 			int targetPosition = before ? commandPathSize - 1 : commandPathSize;
 			for (int i = branchPosition; i < targetPosition; i++) {
-				Node commandPathNode = commandPath.get(i);
+				InternalNode commandPathNode = commandPath.get(i);
 				if (!commandPathNode.command.execute()) {
 					return false;
 				}
@@ -212,15 +220,15 @@ public class ComplexHistory implements History {
 	
 	public void gc() {
 		if (capacity >= 0) {
-			List<Node> aboveNodes = new ArrayList<Node>();
-			Node parentNode = previousNode;
+			List<InternalNode> aboveNodes = new ArrayList<InternalNode>();
+			InternalNode parentNode = previousNode;
 			while (parentNode != null) {
 				aboveNodes.add(parentNode);
 				parentNode = parentNode.parent;
 			}
 
-			List<Node> belowNodes = new ArrayList<Node>();
-			Node childNode = previousNode;
+			List<InternalNode> belowNodes = new ArrayList<InternalNode>();
+			InternalNode childNode = previousNode;
 			while (childNode.selectedChild != null) {
 				childNode = childNode.selectedChild;
 				belowNodes.add(childNode);
@@ -240,7 +248,7 @@ public class ComplexHistory implements History {
 				}
 				
 				if (levelCount >= remainingCapacity) {
-					List<Node> nodesToRipOut = new ArrayList<>();
+					List<InternalNode> nodesToRipOut = new ArrayList<>();
 					
 					int keepBelowCount = (remainingCapacity + 1) / 2 - 1;
 					if (keepBelowCount > belowCount) {
@@ -254,16 +262,16 @@ public class ComplexHistory implements History {
 					}
 					
 					for (int i = 0; i < keepBelowCount; i++) {
-						Node belowNode = belowNodes.get(i);
-						List<Node> reorderedChildren = gcGetChildrenReordered(belowNode);
-						for (Node belowChildNode: reorderedChildren) {
+						InternalNode belowNode = belowNodes.get(i);
+						List<InternalNode> reorderedChildren = gcGetChildrenReordered(belowNode);
+						for (InternalNode belowChildNode: reorderedChildren) {
 							if (!firstIteration || belowChildNode != belowNode.selectedChild) {
 								nodesToRipOut.add(belowChildNode);
 							}
 						}
 					}
 					for (int i = keepBelowCount; i < belowCount; i++) {
-						Node belowNode = belowNodes.get(i);
+						InternalNode belowNode = belowNodes.get(i);
 						nodesToRipOut.add(belowNode);
 						if (firstIteration) {
 							break;
@@ -271,9 +279,9 @@ public class ComplexHistory implements History {
 					}
 
 					for (int i = 0; i < keepAboveCount; i++) {
-						Node aboveNode = aboveNodes.get(i);
-						List<Node> reorderedChildren = gcGetChildrenReordered(aboveNode);
-						for (Node aboveChildNode: reorderedChildren) {
+						InternalNode aboveNode = aboveNodes.get(i);
+						List<InternalNode> reorderedChildren = gcGetChildrenReordered(aboveNode);
+						for (InternalNode aboveChildNode: reorderedChildren) {
 							if (!firstIteration || aboveChildNode != aboveNode.selectedChild) {
 								nodesToRipOut.add(aboveChildNode);
 							}
@@ -281,7 +289,7 @@ public class ComplexHistory implements History {
 					}
 					if (firstIteration) {
 						if (keepAboveCount < aboveCount) {
-							Node lastKeepingAboveNode = aboveNodes.get(keepAboveCount - 1);
+							InternalNode lastKeepingAboveNode = aboveNodes.get(keepAboveCount - 1);
 							nodesToRipOut.add(lastKeepingAboveNode.parent);
 							rootNode = lastKeepingAboveNode;
 							rootNode.children.clear();
@@ -292,30 +300,30 @@ public class ComplexHistory implements History {
 						}
 					} else {
 						for (int i = keepAboveCount; i < aboveCount; i++) {
-							Node aboveNode = aboveNodes.get(i);
+							InternalNode aboveNode = aboveNodes.get(i);
 							nodesToRipOut.add(aboveNode);
 						}
 					}
 					
-					for (Node nodeToRipOut: nodesToRipOut) {
+					for (InternalNode nodeToRipOut: nodesToRipOut) {
 						nodeToRipOut.ripOut();
 					}
 					
 					break;
 				}
 				
-				List<Node> newAboveNodes = new ArrayList<>();
-				for (Node aboveNode: aboveNodes) {
-					List<Node> reorderedChildren = gcGetChildrenReordered(aboveNode);
+				List<InternalNode> newAboveNodes = new ArrayList<>();
+				for (InternalNode aboveNode: aboveNodes) {
+					List<InternalNode> reorderedChildren = gcGetChildrenReordered(aboveNode);
 					if (firstIteration && aboveNode.selectedChild != null) {
 						reorderedChildren.remove(aboveNode.selectedChild);
 					}
 					newAboveNodes.addAll(reorderedChildren);
 				}
 
-				List<Node> newBelowNodes = new ArrayList<>();
-				for (Node belowNode: belowNodes) {
-					List<Node> reorderedChildren = gcGetChildrenReordered(belowNode);
+				List<InternalNode> newBelowNodes = new ArrayList<>();
+				for (InternalNode belowNode: belowNodes) {
+					List<InternalNode> reorderedChildren = gcGetChildrenReordered(belowNode);
 					if (firstIteration && belowNode.selectedChild != null) {
 						reorderedChildren.remove(belowNode.selectedChild);
 					}
@@ -331,13 +339,13 @@ public class ComplexHistory implements History {
 		}
 	}
 
-	private List<Node> gcGetChildrenReordered(Node node) {
-		Node selectedChild = node.selectedChild;
-		List<Node> result = new ArrayList<>(node.children);
+	private List<InternalNode> gcGetChildrenReordered(InternalNode node) {
+		InternalNode selectedChild = node.selectedChild;
+		List<InternalNode> result = new ArrayList<>(node.children);
 		if (!result.isEmpty()) {
 			Collections.reverse(result);
 			if (selectedChild != null) {
-				Node firstItem = result.get(0);
+				InternalNode firstItem = result.get(0);
 				if (firstItem != selectedChild) {
 					int selectedIndex = result.indexOf(selectedChild);
 					if (selectedIndex != (-1)) {
@@ -350,7 +358,7 @@ public class ComplexHistory implements History {
 		return result;
 	}
 	
-	private Node lookUp(Command command) {
+	private InternalNode lookUp(Command command) {
 		if (command == null) {
 			return null;
 		}
@@ -359,12 +367,12 @@ public class ComplexHistory implements History {
 			return previousNode;
 		}
 		
-		List<Node> level = new ArrayList<Node>();
+		List<InternalNode> level = new ArrayList<InternalNode>();
 		level.add(rootNode);
 		while (!level.isEmpty()) {
-			List<Node> nextLevel = new ArrayList<Node>();
-			for (Node node: level) {
-				for (Node childNode: node.children) {
+			List<InternalNode> nextLevel = new ArrayList<InternalNode>();
+			for (InternalNode node: level) {
+				for (InternalNode childNode: node.children) {
 					if (childNode.command == command) {
 						return childNode;
 					}
@@ -387,31 +395,31 @@ public class ComplexHistory implements History {
 		}
 	}
 	
-	private class Node {
+	private class InternalNode {
 		
-		Node parent;
+		InternalNode parent;
 		
 		Command command;
 		
-		List<Node> children = new ArrayList<Node>();
+		List<InternalNode> children = new ArrayList<InternalNode>();
 		
-		Node selectedChild = null;
+		InternalNode selectedChild = null;
 		
-		Node(Node parent, Command command) {
+		InternalNode(InternalNode parent, Command command) {
 			this.parent = parent;
 			this.command = command;
 		}
 		
-		Node branch(Command command) {
-			selectedChild = new Node(this, command);
+		InternalNode branch(Command command) {
+			selectedChild = new InternalNode(this, command);
 			children.add(selectedChild);
 			return selectedChild;
 		}
 		
-		List<Node> getPath() {
-			List<Node> parents = new ArrayList<>();
+		List<InternalNode> getPath() {
+			List<InternalNode> parents = new ArrayList<>();
 			parents.add(this);
-			Node parent = this;
+			InternalNode parent = this;
 			while (parent.parent != null) {
 				parent = parent.parent;
 				parents.add(parent);
@@ -420,7 +428,7 @@ public class ComplexHistory implements History {
 			return parents;
 		}
 		
-		boolean select(Node child) {
+		boolean select(InternalNode child) {
 			if (!children.contains(child)) {
 				return false;
 			}
@@ -438,7 +446,7 @@ public class ComplexHistory implements History {
 				parent = null;
 			}
 			selectedChild = null;
-			for (Node childNode: children) {
+			for (InternalNode childNode: children) {
 				childNode.parent = null;
 			}
 		}
@@ -450,11 +458,47 @@ public class ComplexHistory implements History {
 		
 	}
 	
+	public class CommandNode {
+		
+		private final InternalNode node;
+		
+		private CommandNode(InternalNode node) {
+			this.node = node;
+		}
+		
+		public Command getCommand() {
+			return node.command;
+		}
+		
+		public Command getSelectedNextCommand() {
+			if (node.selectedChild == null) {
+				return null;
+			}
+			return node.selectedChild.command;
+		}
+		
+		public CommandNode getParent() {
+			if (node.parent == null) {
+				return null;
+			}
+			return new CommandNode(node.parent);
+		}
+		
+		public List<CommandNode> getChildren() {
+			List<CommandNode> result = new ArrayList<CommandNode>(node.children.size());
+			for (InternalNode childNode: node.children) {
+				result.add(new CommandNode(childNode));
+			}
+			return result;
+		}
+		
+	}
+	
 	private class SelectedRouteIterator implements Iterator<Command> {
 		
-		private Node previousNode;
+		private InternalNode previousNode;
 		
-		public SelectedRouteIterator(Node rootNode) {
+		public SelectedRouteIterator(InternalNode rootNode) {
 			this.previousNode = rootNode;
 		}
 
