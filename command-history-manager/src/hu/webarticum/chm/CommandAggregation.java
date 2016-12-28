@@ -3,12 +3,26 @@ package hu.webarticum.chm;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Aggregation to execute and roll back multiple commands together.
+ */
+
 public class CommandAggregation extends AbstractCommand {
 
 	private List<Command> commands = new ArrayList<Command>();
 	
 	private boolean closed = false;
-	
+
+    /**
+     * Appends the given command to the end of this aggregation.
+     * 
+     * If this aggregation is closed, then operation will fail.
+     * If this aggregation is not closed and already executed,
+     * and the given command is not executed, then the command
+     * will be executed immediately.
+     * 
+     * @return {@code true} if the command successfully appended
+     */
 	public boolean add(Command command) {
 		if (closed) {
 			return false;
@@ -32,6 +46,11 @@ public class CommandAggregation extends AbstractCommand {
 		return true;
 	}
 	
+	/**
+	 * Closes this aggregation.
+	 * 
+	 * No new command can be added after this invoked.
+	 */
 	public void close() {
 		closed = true;
 	}

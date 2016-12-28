@@ -2,6 +2,10 @@ package hu.webarticum.chm;
 
 import java.util.Date;
 
+/**
+ * Commons for commands.
+ */
+
 abstract public class AbstractCommand implements Command {
 	
 	private boolean executed = false;

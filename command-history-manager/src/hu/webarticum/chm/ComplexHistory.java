@@ -6,6 +6,11 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.NoSuchElementException;
 
+/**
+ * Advanced history implementation.
+ * 
+ * Supports tracking of dead history branches.
+ */
 
 public class ComplexHistory implements History {
 
@@ -23,10 +28,17 @@ public class ComplexHistory implements History {
 		this(-1, false);
 	}
 
+	/**
+	 * @param capacity maximum number of commands in this history
+	 */
 	public ComplexHistory(int capacity) {
 		this(capacity, true);
 	}
 
+	/**
+	 * @param capacity maximum number of commands in this history
+	 * @param gcOnInsert if {@code true} then a clean will be run after every insert
+	 */
 	public ComplexHistory(int capacity, boolean gcOnInsert) {
 		this.capacity = capacity;
 		this.gcOnInsert = gcOnInsert;
@@ -37,10 +49,22 @@ public class ComplexHistory implements History {
 		return new SelectedRouteIterator(rootNode);
 	}
 
+	/**
+	 * Returns the absolute root node of this history.
+	 * 
+	 * All stored nodes are descendants of this node.
+	 * 
+	 * @return the root node object
+	 */
 	public CommandNode getRootCommandNode() {
 		return new CommandNode(rootNode);
 	}
 
+	/**
+	 * Returns node of the most recently executed command.
+	 * 
+	 * @return node of the most recently executed command
+	 */
 	public CommandNode getPreviousCommandNode() {
 		return new CommandNode(previousNode);
 	}
@@ -203,21 +227,55 @@ public class ComplexHistory implements History {
 		return listeners.remove(listener);
 	}
 
+	/**
+	 * Changes the capacity of this history.
+	 * 
+	 * If the given capacity is less then the current size,
+	 * and if {@code gcOnInsert} was set to true,
+	 * then a clean will be run immediately.
+	 * 
+	 * @param capacity
+	 */
 	public void setCapacity(int capacity) {
 		setCapacity(capacity, false);
 	}
 
+	/**
+	 * Changes the capacity of this history.
+	 * 
+	 * If the given capacity is less then the current size,
+	 * and {@code forceGc} is {@code true},
+	 * then a clean will be run immediately regardless of
+	 * the set value of {@code gcOnInsert}.
+	 * 
+	 * @param capacity the new capacity
+	 * @param forceGc if {@code true} then a clean can be run immediately 
+	 */
 	public void setCapacity(int capacity, boolean forceGc) {
 		this.capacity = capacity;
 		if (forceGc || gcOnInsert) {
 			gc();
 		}
 	}
-	
+
+	/**
+	 * Changes the value of {@code gcOnInsert}.
+	 * 
+	 * If {@code gcOnInsert} is {@code true}, then overall size of this history
+	 * will be keeping strictly under capacity.
+	 * 
+	 * @param gcOnInsert new value of {@code gcOnInsert}
+	 */
 	public void setGcOnInsert(boolean gcOnInsert) {
 		this.gcOnInsert = gcOnInsert;
 	}
 	
+	/**
+	 * Runs a clean on this history.
+	 * 
+	 * Removes all the commands outside the capacity.
+	 * Intelligently picks the most abandoned commands for deletion.
+	 */
 	public void gc() {
 		if (capacity >= 0) {
 			boolean changed = false;
@@ -465,6 +523,9 @@ public class ComplexHistory implements History {
 		
 	}
 	
+	/**
+	 * Represents a node in the history tree
+	 */
 	public class CommandNode {
 		
 		private final InternalNode node;
@@ -472,18 +533,33 @@ public class ComplexHistory implements History {
 		private CommandNode(InternalNode node) {
 			this.node = node;
 		}
-		
+
+		/**
+		 * Gets command of this node.
+		 * 
+		 * @return the command or null if this is the root
+		 */
 		public Command getCommand() {
 			return node.command;
 		}
-		
+
+		/**
+		 * Gets the last executed command directly based on this node.
+		 * 
+		 * @return the next command
+		 */
 		public Command getSelectedNextCommand() {
 			if (node.selectedChild == null) {
 				return null;
 			}
 			return node.selectedChild.command;
 		}
-		
+
+		/**
+		 * Gets node this node is based on that.
+		 * 
+		 * @return the parent node
+		 */
 		public CommandNode getParent() {
 			if (node.parent == null) {
 				return null;
@@ -491,6 +567,11 @@ public class ComplexHistory implements History {
 			return new CommandNode(node.parent);
 		}
 		
+		/**
+		 * Gets list of commands directly based on this node.
+		 * 
+		 * @return list of commands directly based on this node
+		 */
 		public List<CommandNode> getChildren() {
 			List<CommandNode> result = new ArrayList<CommandNode>(node.children.size());
 			for (InternalNode childNode: node.children) {

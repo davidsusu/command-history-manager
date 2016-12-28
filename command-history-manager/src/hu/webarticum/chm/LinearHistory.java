@@ -6,6 +6,13 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
+/**
+ * Traditional linear history implementation.
+ * 
+ * All roll-backed command will be removed after a new command added.
+ * Optionally continuously keeps size under a specified capacity.
+ */
+
 public class LinearHistory implements History {
 	
 	private int capacity;
@@ -20,6 +27,9 @@ public class LinearHistory implements History {
 		this(-1);
 	}
 	
+	/**
+	 * @param capacity maximum number of commands in this history
+	 */
 	public LinearHistory(int capacity) {
 		this.capacity = capacity;
 	}
@@ -166,6 +176,14 @@ public class LinearHistory implements History {
 		return listeners.remove(listener);
 	}
 
+	/**
+	 * Changes the capacity of this history.
+	 * 
+	 * If the given capacity is less then the current size,
+	 * then a clean will be run.
+	 * 
+	 * @param capacity
+	 */
 	public void setCapacity(int capacity) {
 		this.capacity = capacity;
 		gc();

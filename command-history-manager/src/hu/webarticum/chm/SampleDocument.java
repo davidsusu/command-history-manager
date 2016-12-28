@@ -4,6 +4,13 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
+/**
+ * Demo document for demonstrating history management.
+ * 
+ * Represents a list of characters.
+ * New characters can be inserted, and existing ones can be removed.
+ */
+
 public class SampleDocument {
 	
 	private final History history;
@@ -12,29 +19,58 @@ public class SampleDocument {
 	
 	private LinkedList<Character> characters = new LinkedList<Character>();
 	
+	/**
+	 * @param history the history manager for handling commands
+	 */
 	public SampleDocument(History history) {
 		this.history = history;
 	}
 	
+	/**
+	 * Gets the history manager of this document.
+	 * 
+	 * @return the history manager
+	 */
 	public History getHistory() {
 		return history;
 	}
 	
+	/**
+	 * Moves internal pointer to the given position.
+	 * 
+	 * If less than zero, then will be corrected to zero.
+	 * If greater then length of document, will be corrected to the length
+	 * 
+	 * @param newPosition the new position of the internal pointer
+	 */
 	public int moveTo(int newPosition) {
 		position = Math.min(characters.size(), Math.max(0, newPosition));
 		return position;
 	}
 
+	/**
+	 * Moves internal pointer to begin (zero).
+	 */
 	public int moveToStart() {
 		position = 0;
 		return position;
 	}
-	
+
+	/**
+	 * Moves internal pointer to end (length of document).
+	 */
 	public int moveToEnd() {
 		position = characters.size();
 		return position;
 	}
 	
+	/**
+	 * Removes character before the current position of internal pointer.
+	 * 
+	 * Operation will fail if current position is zero.
+	 * 
+	 * @return {@code true} on success
+	 */
 	public boolean removeChar() {
 		if (position == 0) {
 			return false;
@@ -43,10 +79,20 @@ public class SampleDocument {
 		return history.addAndExecute(new RemoveCommand(position));
 	}
 
+	/**
+	 * Inserts a character at position of internal pointer.
+	 * 
+	 * @return {@code true} on success
+	 */
 	public boolean printChar(char character) {
 		return history.addAndExecute(new PrintCommand(position, character));
 	}
-	
+
+	/**
+	 * Inserts multiple characters at position of internal pointer.
+	 * 
+	 * @return {@code true} on success
+	 */
 	public boolean printChars(char... characters) {
 		CommandAggregation aggregation = new CommandAggregation();
 		for (int i = 0; i < characters.length; i++) {
@@ -58,10 +104,20 @@ public class SampleDocument {
 		return history.addAndExecute(aggregation);
 	}
 	
+	/**
+	 * Gets the characters of this document (the content).
+	 * 
+	 * @return characters of this document
+	 */
 	public List<Character> getCharacters() {
 		return new ArrayList<Character>(characters);
 	}
-	
+
+	/**
+	 * Gets current position of internal pointer.
+	 * 
+	 * @return position of internal pointer
+	 */
 	public int getPosition() {
 		return position;
 	}

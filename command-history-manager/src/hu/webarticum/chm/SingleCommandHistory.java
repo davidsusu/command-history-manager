@@ -5,6 +5,10 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
+/**
+ * The most simple  history implementation which can store only a single command.
+ */
+
 public class SingleCommandHistory implements History {
 
 	private Command command = null;

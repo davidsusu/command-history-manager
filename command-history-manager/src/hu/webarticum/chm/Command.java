@@ -4,8 +4,6 @@ import java.util.Date;
 
 /**
  * Undoable operation.
- * 
- * @author Dávid Horváth
  */
 
 public interface Command {

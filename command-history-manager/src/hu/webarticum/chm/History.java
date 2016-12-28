@@ -4,8 +4,6 @@ import java.util.Iterator;
 
 /**
  * Stores a history of commands based on each other.
- * 
- * @author Dávid Horváth
  */
 
 public interface History extends Iterable<Command> {
