@@ -30,9 +30,9 @@ public interface Command {
 	public boolean isExecuted();
 	
 	/**
-	 * Returns date when this command was first executed.
+	 * Returns time when this command was first executed.
 	 * 
-	 * @return date when this command was first executed or null
+	 * @return time when this command was first executed or null
 	 */
 	public Date getTime();
 	
