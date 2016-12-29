@@ -9,9 +9,9 @@ Beta. Not versioned yet.
 
 This library provides advanced history management functionality for Java.
 
-Included history manager implementations are not thread safe.
-
 This package focuses strictly on history handling and includes no supplementary tools.
+
+Included history manager implementations are not thread safe.
 
 
 ## Usage
@@ -76,9 +76,9 @@ three types of history managers:
 - `LinearHistory`: this is the traditional implementation, stores a single timeline of commands
 - `ComplexHistory`: an advanced history manager, can store a tree of commands
 
-Of course you can build a custom history manager too, in this case you must implement the `History` interface.
-
 `LinearHistory` and `ComplexHistory` support maximum capacity to avoid excessive memory allocation.
+
+Of course you can build a custom history manager too, in this case you must implement the `History` interface.
 
 Commands must implement the `Command` interface, and it is recommended to extend `AbstractCommand`. For example:
 
