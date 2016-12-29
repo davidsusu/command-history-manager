@@ -6,28 +6,28 @@ import org.junit.Test;
 
 public class AggregationTest {
 
-	@Test
-	public void test() {
-		History history = new LinearHistory();
-		
-		SampleDocument document = new SampleDocument(history);
-		
-		document.printChar('A');
-		
-		assertEquals(" A|", document.toString());
-		
-		document.printChars('B', 'C', 'D');
+    @Test
+    public void test() {
+        History history = new LinearHistory();
+        
+        SampleDocument document = new SampleDocument(history);
+        
+        document.printChar('A');
+        
+        assertEquals(" A|", document.toString());
+        
+        document.printChars('B', 'C', 'D');
 
-		assertEquals(" A B C D|", document.toString());
-		
-		history.rollBackPrevious();
+        assertEquals(" A B C D|", document.toString());
+        
+        history.rollBackPrevious();
 
-		assertEquals(" A|", document.toString());
+        assertEquals(" A|", document.toString());
 
-		history.executeNext();
+        history.executeNext();
 
-		assertEquals(" A B C D|", document.toString());
-		
-	}
+        assertEquals(" A B C D|", document.toString());
+        
+    }
 
 }
