@@ -1,5 +1,6 @@
 package hu.webarticum.chm;
 
+import java.io.Closeable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -7,7 +8,7 @@ import java.util.List;
  * Aggregation to execute and roll back multiple commands together.
  */
 
-public class CommandAggregation extends AbstractCommand {
+public class CommandAggregation extends AbstractCommand implements Closeable {
 
 	private List<Command> commands = new ArrayList<Command>();
 	
