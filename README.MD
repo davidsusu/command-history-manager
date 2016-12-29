@@ -2,6 +2,7 @@
 
 
 ## Version
+
 Beta. Not versioned yet.
 
 
@@ -10,8 +11,6 @@ Beta. Not versioned yet.
 This library provides advanced history management functionality for Java.
 
 This package focuses strictly on history handling and includes no supplementary tools.
-
-Included history manager implementations are not thread safe.
 
 
 ## Usage
