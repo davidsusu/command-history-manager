@@ -1,13 +1,6 @@
 # Command history manager
 
 
-## Version
-
-Beta. Not versioned yet.
-
-
-## Description
-
 This library provides advanced history management functionality for Java.
 
 This package focuses strictly on history handling and includes no supplementary tools.
