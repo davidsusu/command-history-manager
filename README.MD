@@ -152,4 +152,4 @@ Output:
 ```
 
 The last `history.moveAfter(deadSecondCommand);` moves pointer to a dead command
-(not on the current timeline). This whould not have worked with `LinearHistory`.
+(not on the current timeline). This would not have worked with `LinearHistory`.
