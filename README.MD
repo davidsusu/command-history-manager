@@ -17,35 +17,35 @@ SampleDocument document = new SampleDocument(history);
 
 document.printChars('A', 'B');
 
-System.out.println(document); // prints " A B|"
+System.out.println(document); // A B
 Command abCommand = history.getPrevious();
 
 document.printChar('C');
 document.moveTo(1);
 document.printChar('X');
 
-System.out.println(document); // prints " A X|B C"
+System.out.println(document); // A X|B C
 
 history.rollBackPrevious();
 
-System.out.println(document); // prints " A|B C"
+System.out.println(document); // A|B C
 
 document.moveToEnd();
 document.printChar('D');
 
-System.out.println(document); // prints " A B C D|"
+System.out.println(document); // A B C D|
 
 history.moveAfter(abCommand);
 
-System.out.println(document); // prints " A B|"
+System.out.println(document); // A B|
 
 history.executeNext();
 
-System.out.println(document); // prints " A B C|"
+System.out.println(document); // A B C|
 
 history.executeNext();
 
-System.out.println(document); // prints " A B C D|"
+System.out.println(document); // A B C D|
 ```
 
 Output:
