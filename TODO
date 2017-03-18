@@ -1,0 +1,11 @@
+Wormholes:
+  +Operation
+  +Path
+  +Wormhole
+  +WormholeHistory
+  +AutoWormholeHistory
+  !+History.getMainPath()
+  !+History.getPathBetween(Command command1, Command command2)
+  !+History.getPathBetween(Command command1, boolean after1, Command command2, boolean after2)
+  !+Command.execute(? behavior)
+  !+Command.rollBack(? behavior)
