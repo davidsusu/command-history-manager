@@ -113,7 +113,7 @@ public interface History extends Iterable<Command> {
     public boolean removeListener(Listener listener);
     
     /**
-     * Listens to history changes
+     * Listens to history changes.
      */
     public interface Listener {
         
@@ -150,7 +150,7 @@ public interface History extends Iterable<Command> {
         }
         
         /**
-         * Called when a change occurred in the history
+         * Called when a change occurred in the history.
          * 
          * @param history the history that have been changed
          * @param operationType type of the operation
