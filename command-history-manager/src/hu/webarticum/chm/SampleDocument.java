@@ -124,6 +124,35 @@ public class SampleDocument {
         return position;
     }
     
+    /**
+     * Forces inner status of the document
+     * 
+     * @param content string of characters, see the other version
+     * @param position new position of the pointer
+     */
+    public void forceStatus(String content, int position) {
+        List<Character> characters = new ArrayList<Character>();
+        int length = content.length();
+        for (int i = 0; i < length; i++) {
+            characters.add(content.charAt(i));
+        }
+        forceStatus(characters, position);
+    }
+
+    /**
+     * Forces inner status of the document
+     * 
+     * Can be used for demonstrating Command.setExecuted().
+     * 
+     * @param characters the new character list
+     * @param position new position of the pointer
+     */
+    public void forceStatus(List<Character> characters, int position) {
+        this.characters.clear();
+        this.characters.addAll(characters);
+        this.position = position;
+    }
+    
     @Override
     public String toString() {
         StringBuilder resultBuilder = new StringBuilder();

@@ -73,6 +73,13 @@ public class SampleDocumentTest {
         
         Command liveCommand2 = history.getPrevious();
 
+        liveCommand2.setExecuted(false);
+        assertEquals(" A X|Z B C ", document.toString());
+        document.forceStatus("AXYZBC", 3);
+        assertEquals(" A X Y|Z B C ", document.toString());
+        liveCommand2.execute();
+        assertEquals(" A X|Z B C ", document.toString());
+        
         history.rollBackPrevious();
         assertEquals(" A X Y|Z B C ", document.toString());
         history.rollBackPrevious();
