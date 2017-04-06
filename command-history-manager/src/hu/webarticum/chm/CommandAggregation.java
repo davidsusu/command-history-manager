@@ -57,6 +57,14 @@ public class CommandAggregation extends AbstractCommand implements Closeable {
     }
     
     @Override
+    public void setExecuted(boolean executed) {
+        for (Command command: commands) {
+            command.setExecuted(executed);
+        }
+        super.setExecuted(executed);
+    }
+    
+    @Override
     protected boolean _execute() {
         for (Command command: commands) {
             if (!command.execute()) {

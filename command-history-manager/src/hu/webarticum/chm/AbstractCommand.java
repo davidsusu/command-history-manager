@@ -40,7 +40,12 @@ abstract public class AbstractCommand implements Command {
             }
         }
     }
-    
+
+    @Override
+    public void setExecuted(boolean executed) {
+        this.executed = executed;
+    }
+
     @Override
     public boolean isExecuted() {
         return executed;

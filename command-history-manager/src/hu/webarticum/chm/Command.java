@@ -21,7 +21,16 @@ public interface Command {
      * @return {@code true} if command was successfully rolled back
      */
     public boolean rollBack();
-        
+
+    /**
+     * Explicitly sets executed status, do not perform any execution or roll-backing.
+     * 
+     * Use this if operation already performed elsewhere.
+     * It should not be invoked before this command executed
+     * (unless the command's implementation is properly prepared for this).
+     */
+    public void setExecuted(boolean executed);
+    
     /**
      * Returns {@code true} if command have been already executed and is not rolled back.
      * 
