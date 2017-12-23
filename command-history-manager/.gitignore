@@ -1,6 +1,3 @@
-*.class
-*.dex
-*.dex.zip
-*.java.swp
-*.java.swo
-bin/
+/.gradle/
+/bin/
+/build/
