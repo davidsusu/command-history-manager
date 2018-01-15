@@ -1,4 +1,6 @@
 apply plugin: 'java'
+apply plugin: 'signing'
+apply plugin: 'maven'
 
 sourceCompatibility = "1.6";
 targetCompatibility = "1.6";
@@ -11,4 +13,19 @@ repositories {
 
 dependencies {
     testCompile 'junit:junit:4.12'
+}
+
+signing {
+    required { true }
+    sign configurations.archives
+}
+
+uploadArchives {
+    repositories {
+        mavenDeployer {
+            beforeDeployment { MavenDeployment deployment ->
+                signing.signPom(deployment)
+            }
+        }
+    }
 }
