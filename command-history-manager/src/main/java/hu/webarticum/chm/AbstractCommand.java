@@ -6,7 +6,7 @@ import java.util.Date;
  * Commons for commands.
  */
 
-abstract public class AbstractCommand implements Command {
+public abstract class AbstractCommand implements Command {
     
     private boolean executed = false;
     
@@ -56,8 +56,8 @@ abstract public class AbstractCommand implements Command {
         return firstExecutionTime;
     }
     
-    abstract protected boolean _execute();
+    protected abstract boolean _execute();
     
-    abstract protected boolean _rollBack();
+    protected abstract boolean _rollBack();
     
 }
