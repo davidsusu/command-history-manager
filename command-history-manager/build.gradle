@@ -12,8 +12,6 @@ description = 'Complex command history management functionality for Java (undo m
 def scmUrl = 'https://github.com/davidsusu/command-history-manager.git'
 def websiteUrl = scmUrl.replaceAll(/\.git$/, "");
 
-println scmUrl + " / "+ websiteUrl
-
 repositories {
     jcenter()
 }
